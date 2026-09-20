@@ -10,8 +10,13 @@ export default function App() {
   const { output, error } = generateMarkdown(input);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(output);
-    alert("Copied to clipboard!"); // TODO: Make a toast!
+    console.log(output)
+    if (output.trim() != "") {
+      navigator.clipboard.writeText(output);
+      alert("Copied to clipboard!"); // TODO: Make a toast!
+    } else {
+      alert("Please paste a valid JSON before attempting to copy.")
+    }
   };
 
   return (
