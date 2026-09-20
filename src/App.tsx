@@ -7,7 +7,6 @@ import Panel from "./components/Panel/Panel";
 
 export default function App() {
   const [input, setInput] = useState("");
-  // @TODO: Finish writing Markdown Parser
   const { output, error } = generateMarkdown(input);
 
   const handleCopy = () => {
