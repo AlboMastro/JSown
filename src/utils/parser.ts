@@ -21,29 +21,23 @@ export function generateMarkdown(input: string): ParseResult {
         const data = JSON.parse(input);
         const subSchemas: string[] = [];
 
-        let mainMarkdown = '';
 
-        if (Array.isArray(data)) {
-            // If the root input ends up being an array of objects, the first item is taken to map out the columns.
-            // If the array is made of primitives, then it gets simply mapped.
-            if (data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
-                mainMarkdown = parseObjectToTable('Root Array Item', data[0], subSchemas, 'root');
-            } else {
-                return { output: '```json\n' + JSON.stringify(data, null, 2) + '\n```', error: null };
-            }
-        } else if (typeof data === 'object' && data !== null) {
-            mainMarkdown = parseObjectToTable('Payload Schema', data, subSchemas, 'root');
-        } else {
-            return { output: '`' + String(data) + '`', error: null };
+        const isArr = Array.isArray(data);
+        const rootItem = isArr ? data[0] : data;
+
+        if (rootItem === null || typeof rootItem !== 'object') {
+            const formatted = isArr ? JSON.stringify(data, null, 2) : String(data);
+            return { output: isArr ? `\`\`\`json\n${formatted}\n\`\`\`` : `\`${formatted}\``, error: null };
         }
 
-        let finalOutput = mainMarkdown;
-        // If subschemas are found, this part appends a subsection to the main schema
+        const title = isArr ? 'Root Array Item' : 'Payload Schema';
+        let markdown = parseObjectToTable(title, rootItem, subSchemas, 'root');
+
         if (subSchemas.length > 0) {
-            finalOutput += `\n\n---\n\n## Nested Schemas\n\n` + subSchemas.join('\n\n');
+            markdown += `\n\n---\n\n## Nested Schemas\n\n${subSchemas.join('\n\n')}`;
         }
 
-        return { output: finalOutput, error: null };
+        return { output: markdown, error: null };
 
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Invalid JSON syntax';
