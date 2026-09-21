@@ -42,6 +42,13 @@ export default function App() {
           output={output}
         />
       </main>
+
+      {/** To the top shortcut */}
+      <div className="fixed bottom-8 right-8 z-50 pointer-events-none">
+        <div className="pointer-events-auto bg-zinc-900/40 backdrop-blur-md border border-zinc-700/50 px-4 py-2 rounded-xl text-base font-bold shadow-2xl">
+         <a href="#"> ↑ To the top ↑ </a> 
+        </div>
+      </div>
     </div>
   );
 }
