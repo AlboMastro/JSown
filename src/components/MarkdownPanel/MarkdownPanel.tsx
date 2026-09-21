@@ -5,11 +5,15 @@ import remarkGfm from "remark-gfm";
 
 interface MarkdownPanelProps {
   action: () => void;
-  buttonText: string
+  buttonText: string;
   output: string;
 }
 
-export default function MarkdownPanel({ action, buttonText, output }: MarkdownPanelProps) {
+export default function MarkdownPanel({
+  action,
+  buttonText,
+  output,
+}: MarkdownPanelProps) {
   return (
     <Panel
       title="Generated Documentation"
@@ -18,9 +22,9 @@ export default function MarkdownPanel({ action, buttonText, output }: MarkdownPa
         <button
           disabled={!output.length}
           onClick={action}
-          className="rounded bg-indigo-600 px-2.5 py-1 text-xs font-medium text-white transition 
-                     cursor-pointer hover:bg-indigo-500 active:scale-95 
-                     disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+          className="rounded bg-indigo-600 px-2 py-0.5 text-[11px] font-medium text-white transition 
+             cursor-pointer hover:bg-indigo-500 active:scale-95 
+             disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
         >
           {buttonText}
         </button>
