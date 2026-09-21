@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { generateMarkdown } from "./utils/parser";
 
@@ -8,14 +8,20 @@ import MarkdownPanel from "./components/MarkdownPanel/MarkdownPanel";
 
 export default function App() {
   const [input, setInput] = useState("");
+  const [buttonText, setButtonText] = useState("Copy MD");
+  const timeOutRef = useRef(0);
   const { output, error } = generateMarkdown(input);
 
   const handleCopy = () => {
+    if (timeOutRef.current) clearTimeout(timeOutRef.current);
+
     if (output.trim() != "") {
       navigator.clipboard.writeText(output);
-      alert("Copied to clipboard!"); // TODO: Make a toast!
-    } else {
-      alert("Please paste a valid JSON before attempting to copy.")
+      setButtonText("Copied!");
+
+      timeOutRef.current = setTimeout(() => {
+        setButtonText("Copy MD");
+      }, 1250);
     }
   };
 
@@ -26,19 +32,15 @@ export default function App() {
       <main className="flex-1 w-full p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-73px)]">
         {/* Input */}
 
-        <JSONPanel 
-          value={input}
-          onChange={setInput}
-          error={error}
-        />
+        <JSONPanel value={input} onChange={setInput} error={error} />
 
         {/* Output */}
 
         <MarkdownPanel
           action={handleCopy}
+          buttonText={buttonText}
           output={output}
         />
-
       </main>
     </div>
   );
