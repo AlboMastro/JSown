@@ -28,7 +28,7 @@ export default function JSONPanel({
   /**
    * This function handles the horizontal lock of the lines, preventing them from accidentally
    * getting out of sync.
-   * 
+   *
    * @param e The onScroll event
    */
   const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
@@ -37,33 +37,51 @@ export default function JSONPanel({
     }
   };
 
-  /**
-   * This function tries to replicate a code editor's Tab function. 
-   * It first prevents the default behaviour of selecting the next DOM element, then checks the current target of the cursor.
-   * It then inserts two empty spaces. The newValue reconstructs the string via slice.
-   * The setTimeout syncs with the React state update.
-   * 
-   * @param e Reads keydown events, function gets triggered when the key is Tab.
+/**
+   * Replicates a code editor's Tab key behavior in a textarea.
+   * Prevents default focus-escaping and inserts spaces at the cursor, 
+   * or indents multiple lines if a block of text is selected.
+   *
+   * @param e - The keyboard event triggered on the textarea.
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Tab") {
-      e.preventDefault(); // Stop focus from escaping
+    if (e.key !== "Tab") return;
 
-      const target = e.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
+    e.preventDefault();
 
-      // Insert 2 spaces, I could make this a variable so the user can choose tab spaces potentially...
-      const tabSpaces = "  ";
+    const target = e.currentTarget;
+    const { selectionStart, selectionEnd } = target;
+    const tabSpaces = "  ";
 
-      const newValue =
-        value.substring(0, start) + tabSpaces + value.substring(end);
-      onChange(newValue);
+    const selectedText = value.substring(selectionStart, selectionEnd);
 
-      // Move cursor to the right position after state updates
-      setTimeout(() => {
-        target.selectionStart = target.selectionEnd = start + tabSpaces.length;
-      }, 0);
+    if (selectedText.includes("\n")) {
+      // Indent every line in the selection
+      const indentedText = selectedText
+        .split("\n")
+        .map((line) => tabSpaces + line)
+        .join("\n");
+
+      onChange(
+        value.substring(0, selectionStart) +
+          indentedText +
+          value.substring(selectionEnd),
+      );
+
+      // Keep the selection active over the newly indented lines
+      target.setSelectionRange(
+        selectionStart,
+        selectionStart + indentedText.length,
+      );
+    } else {
+      onChange(
+        value.substring(0, selectionStart) +
+          tabSpaces +
+          value.substring(selectionEnd),
+      );
+
+      const newCursorPosition = selectionStart + tabSpaces.length;
+      target.setSelectionRange(newCursorPosition, newCursorPosition);
     }
   };
 
@@ -95,7 +113,7 @@ export default function JSONPanel({
             spellCheck={false}
             // IMPORTANT: the value of leading-x in this classname MUST match with the value in the line number column classname.
             className={`w-full h-full bg-transparent py-4 px-4 font-mono text-xs text-zinc-300 resize-none focus:outline-none placeholder:text-zinc-600 leading-5 whitespace-pre ${
-              error ? "pb-14" : "" 
+              error ? "pb-14" : ""
             }`}
             placeholder={placeholder}
           />
