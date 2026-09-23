@@ -92,7 +92,8 @@ function parseObjectToTable(
     }
 
     // Push local findings into the master subSchemas array after the loop finishes
-    subSchemas.push(...localSubSchemas);
+    subSchemas.push(...localSubSchemas)
+    subSchemas.reverse()
 
     return table;
 }
